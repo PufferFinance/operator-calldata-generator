@@ -5,7 +5,13 @@ https://book.getfoundry.sh/getting-started/installation
 
 ## Usage
 
-Update values in the `.env` and run 
+Step 1. 
+`forge install`
+
+Step 2: 
+Update values in the `.env`
+
+Step 3: Run
 ```shell
 forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$HOLESKY_RPC_URL --ffi
 ```
