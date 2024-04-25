@@ -1,0 +1,8 @@
+@openzeppelin-upgrades/=lib/eigenlayer-contracts/lib/openzeppelin-contracts-upgradeable/
+@openzeppelin/=lib/eigenlayer-contracts/lib/openzeppelin-contracts/
+ds-test/=lib/eigenlayer-contracts/lib/ds-test/src/
+eigenlayer-contracts/=lib/eigenlayer-contracts/
+eigenlayer-middleware/=lib/eigenlayer-middleware/
+forge-std/=lib/forge-std/src/
+openzeppelin-contracts-upgradeable/=lib/eigenlayer-contracts/lib/openzeppelin-contracts-upgradeable/
+openzeppelin-contracts/=lib/eigenlayer-contracts/lib/openzeppelin-contracts/
