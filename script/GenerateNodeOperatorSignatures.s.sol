@@ -26,7 +26,7 @@ contract GenerateNodeOperatorSignatures is Script {
             vm.envUint("OPERATOR_ECDSA_SK"),
             restakingOperatorContract,
             vm.envAddress("AVS_SERVICE_MANAGER"),
-            vm.envBytes32("SALT"),
+            bytes32(block.timestamp),
             type(uint256).max
         );
 
@@ -80,7 +80,7 @@ contract GenerateNodeOperatorSignatures is Script {
 
     function _mulGo(uint256 x) internal returns (BN254.G2Point memory g2Point) {
         string[] memory inputs = new string[](3);
-        inputs[0] = "./go2mul"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         inputs[1] = x.toString();
 
         inputs[2] = "1";
