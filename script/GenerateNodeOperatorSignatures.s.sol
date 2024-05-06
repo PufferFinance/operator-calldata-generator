@@ -19,6 +19,8 @@ contract GenerateNodeOperatorSignatures is Script {
     function run() public {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
+        
+        address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
@@ -26,11 +28,9 @@ contract GenerateNodeOperatorSignatures is Script {
             vm.envUint("OPERATOR_ECDSA_SK"),
             restakingOperatorContract,
             vm.envAddress("AVS_SERVICE_MANAGER"),
-            bytes32(block.timestamp),
+            bytes32(abi.encodePacked(block.timestamp, operatorAddress)),
             type(uint256).max
         );
-
-        address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
         bytes memory hashCall = abi.encodeWithSelector(
             hex"d82752c8", // updateAVSRegistrationSignatureProof
@@ -80,7 +80,8 @@ contract GenerateNodeOperatorSignatures is Script {
 
     function _mulGo(uint256 x) internal returns (BN254.G2Point memory g2Point) {
         string[] memory inputs = new string[](3);
-        inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        // inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        inputs[0] = "./go2mul"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         inputs[1] = x.toString();
 
         inputs[2] = "1";
