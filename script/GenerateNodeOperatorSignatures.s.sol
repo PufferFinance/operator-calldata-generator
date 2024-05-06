@@ -115,12 +115,24 @@ contract GenerateNodeOperatorSignatures is Script {
         operatorSignature.expiry = expiry;
         operatorSignature.salt = salt;
         {
-            digestHash = IAVSDirectory(vm.envAddress("AVS_DIRECTORY")).calculateOperatorAVSRegistrationDigestHash(
+            digestHash = IAVSDirectory(_getAVSDirectoryAddress()).calculateOperatorAVSRegistrationDigestHash(
                 operator, avs, salt, expiry
             );
             (uint8 v, bytes32 r, bytes32 s) = vm.sign(_operatorPrivateKey, digestHash);
             operatorSignature.signature = abi.encodePacked(r, s, v);
         }
         return (digestHash, operatorSignature);
+    }
+
+    function _getAVSDirectoryAddress() internal view returns(address) {
+        if (block.chainid == 1) {
+            return 0x135DDa560e946695d6f155dACaFC6f1F25C1F5AF;
+        }
+
+        if (block.chainid == 17000) {
+            return 0x055733000064333CaDDbC92763c58BF0192fFeBf;
+        }
+
+        revert("Invalid chainId");
     }
 }
