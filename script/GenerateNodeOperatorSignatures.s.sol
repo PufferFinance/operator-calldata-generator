@@ -81,6 +81,7 @@ contract GenerateNodeOperatorSignatures is Script {
     function _mulGo(uint256 x) internal returns (BN254.G2Point memory g2Point) {
         string[] memory inputs = new string[](3);
         // inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        // inputs[0] = "./go2mul-arm64"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         inputs[0] = "./go2mul"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         inputs[1] = x.toString();
 
