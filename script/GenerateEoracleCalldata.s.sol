@@ -38,8 +38,8 @@ contract GenerateEoracleCalldata is BaseScript {
     function run() public {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         // EORACLE https://github.com/Eoracle/eoracle-middleware?tab=readme-ov-file
-        address registryCoordinator = 0x757E6f572AfD8E111bD913d35314B5472C051cA8;
-        address avs = 0x23221c5bB90C7c57ecc1E75513e2E4257673F0ef;
+        address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
+        address avs = vm.envAddress("AVS_SERVICE_MANAGER");
         
         address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
