@@ -42,5 +42,5 @@ failed to execute command cd "/home/puffer-signature-generator" && "./go2mul" Pe
 ```
 or something similar, do `chmod +x go2mul` 
 
-### Using Mac instead of Linux
-Change `inputs[0] = "./go2mul";` to `inputs[0] = "./go2mul-mac";` in the script/GenerateNodeOperatorSignatures.s.sol
+### Using Mac/Linux ARM64 instead of Linux
+Change `inputs[0] = "./go2mul";` to `inputs[0] = "./go2mul-mac";` / `inputs[0] = "./go2mul-arm64"` in the script/BaseScript.s.sol
