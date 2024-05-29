@@ -19,7 +19,7 @@ contract GenerateNodeOperatorSignatures is BaseScript {
     function run() public {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
-        
+
         address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
