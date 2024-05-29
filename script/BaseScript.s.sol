@@ -8,7 +8,6 @@ import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/I
 import { IAVSDirectory } from "eigenlayer-contracts/src/contracts/interfaces/IAVSDirectory.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
-
 contract BaseScript is Script {
     using BN254 for BN254.G1Point;
     using Strings for uint256;
@@ -71,7 +70,7 @@ contract BaseScript is Script {
         return (digestHash, operatorSignature);
     }
 
-    function _getAVSDirectoryAddress() internal view returns(address) {
+    function _getAVSDirectoryAddress() internal view returns (address) {
         if (block.chainid == 1) {
             return 0x135DDa560e946695d6f155dACaFC6f1F25C1F5AF;
         }

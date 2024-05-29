@@ -11,14 +11,22 @@ Step 1.
 Step 2: 
 Update values in the `.env`
 
-Step 3: Run
+Step 3: If the AVS uses the standard interface that EigenDA uses:
 ```shell
-forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$HOLESKY_RPC_URL --ffi
+forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$RPC_URL --ffi
+```
+eOracle:
+```
+forge script script/GenerateEoracleCalldata.s.sol:GenerateEoracleCalldata --rpc-url=$RPC_URL --ffi
+```
+Lagrange:
+```
+forge script script/GenerateLagrangeCalldata.s.sol:GenerateLagrangeCalldata --rpc-url=$RPC_URL --ffi
 ```
 
 Output example:
 ```bash
-forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$HOLESKY_RPC_URL --ffi
+forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$RPC_URL --ffi
 [⠢] Compiling...
 No files changed, compilation skipped
 Script ran successfully.
@@ -35,6 +43,8 @@ Script ran successfully.
 ```
 
 ## Troubleshooting
+
+### Note: Some of the AVSs use a different interface for registration for Mainnet/Holesky
 
 ### Permission issue
 ```bash
