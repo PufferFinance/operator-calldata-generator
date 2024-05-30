@@ -71,13 +71,6 @@ contract GenerateLagrangeCalldata is BaseScript {
             registrationCallData
         );
 
-        bytes memory calldataToSubscribe = abi.encodeWithSelector(
-            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-            restakingOperatorContract,
-            registryCoordinator,
-            abi.encodeCall(ILagrangeService.subscribe, (uint32(vm.envUint("CHAIN_ID"))))
-        );
-
         console.log("Digest hash:");
         console.logBytes32(digestHash);
         console.log("--------------------");
@@ -90,7 +83,30 @@ contract GenerateLagrangeCalldata is BaseScript {
         console.logBytes(calldataToRegister);
         console.log("--------------------");
 
-        console.log("Subscribe calldata:");
-        console.logBytes(calldataToSubscribe);
+        console.log("Subscribe calldata Base:");
+        console.logBytes(abi.encodeWithSelector(
+            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
+            restakingOperatorContract,
+            registryCoordinator,
+            abi.encodeCall(ILagrangeService.subscribe, (uint32(8453)))
+        ));
+        console.log("--------------------");
+
+        console.log("Subscribe calldata Optimism:");
+        console.logBytes(abi.encodeWithSelector(
+            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
+            restakingOperatorContract,
+            registryCoordinator,
+            abi.encodeCall(ILagrangeService.subscribe, (uint32(10)))
+        ));
+        console.log("--------------------");
+
+        console.log("Subscribe calldata Arbitrum:");
+        console.logBytes(abi.encodeWithSelector(
+            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
+            restakingOperatorContract,
+            registryCoordinator,
+            abi.encodeCall(ILagrangeService.subscribe, (uint32(42161)))
+        ));
     }
 }
