@@ -16,6 +16,8 @@ interface ILagrangeService {
         uint256[2][] memory blsPubKeys,
         ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
+
+    function subscribe(uint32 chainId) external;
 }
 
 /**
@@ -69,6 +71,13 @@ contract GenerateLagrangeCalldata is BaseScript {
             registrationCallData
         );
 
+        bytes memory calldataToSubscribe = abi.encodeWithSelector(
+            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
+            restakingOperatorContract,
+            registryCoordinator,
+            abi.encodeCall(ILagrangeService.subscribe, (uint32(vm.envUint("CHAIN_ID"))))
+        );
+
         console.log("Digest hash:");
         console.logBytes32(digestHash);
         console.log("--------------------");
@@ -79,5 +88,9 @@ contract GenerateLagrangeCalldata is BaseScript {
 
         console.log("RegisterOperatorToAVS calldata:");
         console.logBytes(calldataToRegister);
+        console.log("--------------------");
+
+        console.log("Subscribe calldata:");
+        console.logBytes(calldataToSubscribe);
     }
 }
