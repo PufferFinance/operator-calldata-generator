@@ -4,32 +4,34 @@ pragma solidity ^0.8.13;
 import { console } from "forge-std/Script.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
-import { IBLSApkRegistry } from "eigenlayer-middleware/src/interfaces/IRegistryCoordinator.sol";
 import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Interface for easier calldata generation
-// This is for mainnet only, Holesky uses a different interface
-interface ILagrangeService {
-    function register(
-        address signAddress,
-        uint256[2][] memory blsPubKeys,
+interface ILagrangeZKService {
+    /// @notice A point on an elliptic curve
+    /// @dev Used to represent an ECDSA public key
+    struct PublicKey {
+        uint256 x;
+        uint256 y;
+    }
+
+    function registerOperator(
+        PublicKey calldata publicKey,
         ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
-
-    function subscribe(uint32 chainId) external;
 }
 
 /**
- * forge script script/GenerateLagrangeCalldata.s.sol:GenerateLagrangeCalldata --rpc-url=$RPC_URL --ffi
+ * forge script script/GenerateLagrangeZKCalldata.s.sol:GenerateLagrangeZKCalldata --rpc-url=$RPC_URL --ffi
  */
-contract GenerateLagrangeCalldata is BaseScript {
+contract GenerateLagrangeZKCalldata is BaseScript {
     using BN254 for BN254.G1Point;
     using Strings for uint256;
 
-    function run() public {
+    function run() public view {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
-        // Lagrange https://lagrange-labs.gitbook.io/lagrange-v2-1
+        // Lagrange https://lagrange-labs.gitbook.io/lagrange-v2-1/zk-coprocessor/avs-operators/registration
         // It is the same contract for both in Lagrange case
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
         address avs = vm.envAddress("AVS_SERVICE_MANAGER");
@@ -53,16 +55,13 @@ contract GenerateLagrangeCalldata is BaseScript {
             operatorAddress
         );
 
-        // Get the BLS pubkey params for EigenDA (they are used in eoracle, so we can just copy them to eoracle struct)
-        IBLSApkRegistry.PubkeyRegistrationParams memory params = _generateBlsPubkeyParams(vm.envUint("OPERATOR_BLS_SK"));
-
-        uint256[2][] memory blsPubKeys = new uint256[2][](1);
-        blsPubKeys[0][0] = params.pubkeyG1.X;
-        blsPubKeys[0][1] = params.pubkeyG1.Y;
+        ILagrangeZKService.PublicKey memory pubKey;
+        pubKey.x = vm.envUint("ECDSA_X");
+        pubKey.y = vm.envUint("ECDSA_Y");
 
         // Custom call to Lagrange
         bytes memory registrationCallData =
-            abi.encodeCall(ILagrangeService.register, (operatorAddress, blsPubKeys, operatorSignature));
+            abi.encodeCall(ILagrangeZKService.registerOperator, (pubKey, operatorSignature));
 
         bytes memory calldataToRegister = abi.encodeWithSelector(
             hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
@@ -79,40 +78,8 @@ contract GenerateLagrangeCalldata is BaseScript {
         console.logBytes(hashCall);
         console.log("--------------------");
 
-        console.log("RegisterOperatorToAVS calldata:");
+        console.log("RegisterOperatorToAVS GenerateLagrangeZKCalldata calldata:");
         console.logBytes(calldataToRegister);
         console.log("--------------------");
-
-        console.log("Subscribe calldata Base:");
-        console.logBytes(
-            abi.encodeWithSelector(
-                hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-                restakingOperatorContract,
-                registryCoordinator,
-                abi.encodeCall(ILagrangeService.subscribe, (uint32(8453)))
-            )
-        );
-        console.log("--------------------");
-
-        console.log("Subscribe calldata Optimism:");
-        console.logBytes(
-            abi.encodeWithSelector(
-                hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-                restakingOperatorContract,
-                registryCoordinator,
-                abi.encodeCall(ILagrangeService.subscribe, (uint32(10)))
-            )
-        );
-        console.log("--------------------");
-
-        console.log("Subscribe calldata Arbitrum:");
-        console.logBytes(
-            abi.encodeWithSelector(
-                hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-                restakingOperatorContract,
-                registryCoordinator,
-                abi.encodeCall(ILagrangeService.subscribe, (uint32(42161)))
-            )
-        );
     }
 }
