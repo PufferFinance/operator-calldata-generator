@@ -12,6 +12,10 @@ contract BaseScript is Script {
     using BN254 for BN254.G1Point;
     using Strings for uint256;
 
+    // Dummy SK, it is not important in the whole process
+    uint256 _ECDSA_SK = 0x2326d354fd11f84309fd8d558dfde81b7d90cda798c6d03b2799d992ba9a3b72;
+    address _ECDSA_ADDRESS = vm.addr(_ECDSA_SK); // 0x85Ea121C6F44c604E5fC51EF80eD72b65fE51CfB
+
     // Generates bls pubkey params from a private key
     function _generateBlsPubkeyParams(uint256 privKey)
         internal
@@ -47,10 +51,6 @@ contract BaseScript is Script {
         g2Point.Y[0] = abi.decode(res, (uint256));
     }
 
-    /**
-     * @notice internal function for calculating a signature from the operator corresponding to `_operatorPrivateKey`, delegating them to
-     * the `operator`, and expiring at `expiry`.
-     */
     function _getOperatorSignature(
         uint256 _operatorPrivateKey,
         address operator,

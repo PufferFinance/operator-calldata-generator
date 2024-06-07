@@ -20,15 +20,13 @@ contract GenerateNodeOperatorSignatures is BaseScript {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
 
-        address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
-
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
-            vm.envUint("OPERATOR_ECDSA_SK"),
+            _ECDSA_SK,
             restakingOperatorContract,
             vm.envAddress("AVS_SERVICE_MANAGER"),
-            bytes32(keccak256(abi.encodePacked(block.timestamp, operatorAddress))),
+            bytes32(keccak256(abi.encodePacked(block.timestamp, restakingOperatorContract))),
             type(uint256).max
         );
 
@@ -36,7 +34,7 @@ contract GenerateNodeOperatorSignatures is BaseScript {
             hex"d82752c8", // updateAVSRegistrationSignatureProof
             restakingOperatorContract,
             digestHash,
-            operatorAddress
+            _ECDSA_ADDRESS
         );
 
         IBLSApkRegistry.PubkeyRegistrationParams memory params = _generateBlsPubkeyParams(vm.envUint("OPERATOR_BLS_SK"));
