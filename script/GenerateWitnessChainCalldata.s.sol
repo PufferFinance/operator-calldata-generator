@@ -19,7 +19,10 @@ interface IOperatorRegistry {
     // signedMessage = sign(calculateWatchtowerRegistrationMessageHash(..))
     function registerWatchtowerAsOperator(address watchtower, uint256 expiry, bytes memory signedMessage) external;
 
-    function calculateWatchtowerRegistrationMessageHash(address operator, uint256 expiry) external view returns(bytes32);
+    function calculateWatchtowerRegistrationMessageHash(address operator, uint256 expiry)
+        external
+        view
+        returns (bytes32);
 }
 
 /**
@@ -33,7 +36,7 @@ contract GenerateWitnessChainCalldata is BaseScript {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
         address avs = vm.envAddress("AVS_SERVICE_MANAGER");
-        
+
         address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
@@ -53,14 +56,16 @@ contract GenerateWitnessChainCalldata is BaseScript {
             operatorAddress
         );
 
-        bytes32 msgHash = IOperatorRegistry(vm.envAddress("OPERATOR_REGISTRY")).calculateWatchtowerRegistrationMessageHash(restakingOperatorContract, type(uint256).max);
-        
+        bytes32 msgHash = IOperatorRegistry(vm.envAddress("OPERATOR_REGISTRY"))
+            .calculateWatchtowerRegistrationMessageHash(restakingOperatorContract, type(uint256).max);
+
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(vm.envUint("OPERATOR_ECDSA_SK"), msgHash);
 
         bytes memory signedMessage = abi.encodePacked(r, s, v);
 
         bytes memory operatorSignedMessageCd = abi.encodeCall(
-            IOperatorRegistry.registerWatchtowerAsOperator, (vm.addr(vm.envUint("OPERATOR_ECDSA_SK")), type(uint256).max, signedMessage)
+            IOperatorRegistry.registerWatchtowerAsOperator,
+            (vm.addr(vm.envUint("OPERATOR_ECDSA_SK")), type(uint256).max, signedMessage)
         );
 
         bytes memory registerWatchtowerAsOperatorCalldata = abi.encodeWithSelector(
@@ -87,10 +92,6 @@ contract GenerateWitnessChainCalldata is BaseScript {
 
         console.log("registerWatchtowerAsOperator calldata:");
         console.logBytes(registerWatchtowerAsOperatorCalldata);
-        console.log("--------------------");
-
-        console.log("Digest hash:");
-        console.logBytes32(digestHash);
         console.log("--------------------");
 
         console.log("Store digest hash to PufferModuleManager calldata:");
