@@ -36,15 +36,13 @@ contract GenerateLagrangeZKCalldata is BaseScript {
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
         address avs = vm.envAddress("AVS_SERVICE_MANAGER");
 
-        address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
-
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
-            vm.envUint("OPERATOR_ECDSA_SK"),
+            _ECDSA_SK,
             restakingOperatorContract,
             avs,
-            bytes32(keccak256(abi.encodePacked(block.timestamp, operatorAddress))),
+            bytes32(keccak256(abi.encodePacked(block.timestamp, restakingOperatorContract))),
             type(uint256).max
         );
 
@@ -52,7 +50,7 @@ contract GenerateLagrangeZKCalldata is BaseScript {
             hex"d82752c8", // updateAVSRegistrationSignatureProof
             restakingOperatorContract,
             digestHash,
-            operatorAddress
+            _ECDSA_ADDRESS
         );
 
         ILagrangeZKService.PublicKey memory pubKey;
