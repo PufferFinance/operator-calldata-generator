@@ -7,7 +7,6 @@ import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/I
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 
-
 interface INodeRegistry {
     function nodeRegister(
         bytes calldata dkgPublicKey,
@@ -27,7 +26,6 @@ contract GenerateARPACalldata is BaseScript {
     function run() public view {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
-        // address signingKeyAddress = vm.envAddress("ECDSA_SIGNING_KEY_ADDDRESS");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
@@ -47,13 +45,11 @@ contract GenerateARPACalldata is BaseScript {
         );
 
         // Params for nodeRegister
-        bytes memory dkgPublicKey =  vm.envBytes("DKG_PUBLIC_KEY"); //assuming Operator has dkg public key : https://docs.arpanetwork.io/#core-architecture-and-standards
-        bool isEigenlayerNode = true;
-        address assetAccountAddress = vm.envAddress("ASSET_ACCOUNT_ADDRESS");
+        bytes memory dkgPublicKey = vm.envBytes("DKG_PUBLIC_KEY"); //assuming Operator has dkg public key : https://docs.arpanetwork.io/#core-architecture-and-standards
 
         // custom registration calldata
         bytes memory registrationCallData = abi.encodeCall(
-            INodeRegistry.nodeRegister, (dkgPublicKey, isEigenlayerNode, assetAccountAddress, operatorSignature)
+            INodeRegistry.nodeRegister, (dkgPublicKey, true, restakingOperatorContract, operatorSignature)
         );
 
         bytes memory calldataToRegister = abi.encodeWithSelector(
