@@ -7,7 +7,6 @@ import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/I
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 
-
 interface IHyperLaneRegistryCoordinator {
     /// @notice Registers a new operator using a provided signature and signing key
     /// @param _operatorSignature Contains the operator's signature, salt, and expiry

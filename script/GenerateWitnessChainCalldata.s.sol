@@ -17,9 +17,9 @@ interface IWitnessChainRegistryCoordinator {
 
 interface IOperatorRegistry {
     // signedMessage = sign(calculateWatchtowerRegistrationMessageHash(..))
-    function registerWatchtowerAsOperator(address watchtower, uint256 expiry, bytes memory signedMessage) external;
+    function registerWatchtowerAsOperator(address operatorEOA, uint256 expiry, bytes memory signedMessage) external;
 
-    function calculateWatchtowerRegistrationMessageHash(address operator, uint256 expiry)
+    function calculateWatchtowerRegistrationMessageHash(address operator, bytes32 salt, uint256 expiry)
         external
         view
         returns (bytes32);
@@ -42,7 +42,7 @@ contract GenerateWitnessChainCalldata is BaseScript {
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
-            vm.envUint("OPERATOR_ECDSA_SK"),
+            _ECDSA_SK,
             restakingOperatorContract,
             avs,
             bytes32(keccak256(abi.encodePacked(block.timestamp, operatorAddress))),
@@ -57,7 +57,11 @@ contract GenerateWitnessChainCalldata is BaseScript {
         );
 
         bytes32 msgHash = IOperatorRegistry(vm.envAddress("OPERATOR_REGISTRY"))
-            .calculateWatchtowerRegistrationMessageHash(restakingOperatorContract, type(uint256).max);
+            .calculateWatchtowerRegistrationMessageHash(
+            restakingOperatorContract,
+            bytes32(keccak256(abi.encodePacked(block.timestamp + 1, operatorAddress))),
+            type(uint256).max
+        );
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(vm.envUint("OPERATOR_ECDSA_SK"), msgHash);
 
