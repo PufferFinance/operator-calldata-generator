@@ -95,6 +95,10 @@ contract GenerateWitnessChainCalldata is BaseScript {
             registrationCallData
         );
 
+        console.log("Operator address to be whitelisted:");
+        console.logAddress(operatorAddress);
+        console.log("--------------------");
+
         console.log("Store digest hash to PufferModuleManager calldata:");
         console.logBytes(hashCall);
         console.log("--------------------");
