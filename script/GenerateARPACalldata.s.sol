@@ -25,7 +25,6 @@ contract GenerateARPACalldata is BaseScript {
 
     function run() public view {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
-        address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
@@ -52,18 +51,18 @@ contract GenerateARPACalldata is BaseScript {
             INodeRegistry.nodeRegister, (dkgPublicKey, true, restakingOperatorContract, operatorSignature)
         );
 
-        bytes memory calldataToRegister = abi.encodeWithSelector(
-            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-            restakingOperatorContract,
-            registryCoordinator,
-            registrationCallData
-        );
 
         console.log("Store digest hash to PufferModuleManager calldata:");
         console.logBytes(hashCall);
         console.log("--------------------");
-
-        console.log("RegisterOperatorToAVS calldata:");
-        console.logBytes(calldataToRegister);
+        console.log("Node account to be registered:");
+        console.log(vm.envAddress("NODE_ACCOUNT_ADDRESS"));
+        console.log("--------------------");
+        console.log(
+            "Calldata to register the node (this will be done by Node Operator after the digest hash is stored by Puffer Team):"
+        );
+        console.log("TO BE ONLY CALLED BY NODE OPERATOR, NOT PUFFER TEAM");
+        console.log("");
+        console.logBytes(registrationCallData);
     }
 }
