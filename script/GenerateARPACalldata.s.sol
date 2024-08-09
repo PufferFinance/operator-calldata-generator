@@ -14,8 +14,6 @@ interface INodeRegistry {
         address assetAccountAddress,
         ISignatureUtils.SignatureWithSaltAndExpiry memory assetAccountSignature
     ) external;
-
-    function nodeLogOff() external;
 }
 
 /**
@@ -27,7 +25,6 @@ contract GenerateARPACalldata is BaseScript {
 
     function run() public view {
         address restakingOperatorContract = vm.envAddress("RESTAKING_OPERATOR_CONTRACT");
-        address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
         (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
@@ -46,15 +43,6 @@ contract GenerateARPACalldata is BaseScript {
             _ECDSA_ADDRESS
         );
 
-        // de-register the node (only once after the incorrect registration)
-        bytes memory deregistrationCalldata = abi.encodeCall(INodeRegistry.nodeLogOff, ());
-        bytes memory calldataToDeRegister = abi.encodeWithSelector(
-            hex"a6cee53d", // pufferModuleManager.customExternalCall(address,address,bytes)
-            restakingOperatorContract,
-            registryCoordinator,
-            deregistrationCalldata
-        );
-
         // Params for nodeRegister
         bytes memory dkgPublicKey = vm.envBytes("DKG_PUBLIC_KEY"); //assuming Operator has dkg public key : https://docs.arpanetwork.io/#core-architecture-and-standards
 
@@ -63,19 +51,18 @@ contract GenerateARPACalldata is BaseScript {
             INodeRegistry.nodeRegister, (dkgPublicKey, true, restakingOperatorContract, operatorSignature)
         );
 
-        console.log("Calldata To De-Register the previous node:");
-        console.logBytes(calldataToDeRegister);
-        console.log("--------------------");
 
         console.log("Store digest hash to PufferModuleManager calldata:");
         console.logBytes(hashCall);
         console.log("--------------------");
-        console.log("New node account to be registered:");
+        console.log("Node account to be registered:");
         console.log(vm.envAddress("NODE_ACCOUNT_ADDRESS"));
         console.log("--------------------");
         console.log(
-            "Calldata to register the new node (this will be done by Node Operator after the digest hash is stored by Puffer Team):"
+            "Calldata to register the node (this will be done by Node Operator after the digest hash is stored by Puffer Team):"
         );
+        console.log("TO BE ONLY CALLED BY NODE OPERATOR, NOT PUFFER TEAM");
+        console.log("");
         console.logBytes(registrationCallData);
     }
 }
