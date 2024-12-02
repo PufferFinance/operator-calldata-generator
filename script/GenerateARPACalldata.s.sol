@@ -14,6 +14,9 @@ interface INodeRegistry {
         address assetAccountAddress,
         ISignatureUtils.SignatureWithSaltAndExpiry memory assetAccountSignature
     ) external;
+
+    function nodeActivate(ISignatureUtils.SignatureWithSaltAndExpiry memory assetAccountSignature)
+        external;
 }
 
 /**
