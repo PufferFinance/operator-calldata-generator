@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import { IRegistryCoordinator, IBLSApkRegistry } from "eigenlayer-middleware/src/interfaces/IRegistryCoordinator.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 
 interface IRegistryCoordinatorExtended is IRegistryCoordinator {
     /**
@@ -19,7 +19,7 @@ interface IRegistryCoordinatorExtended is IRegistryCoordinator {
         bytes calldata quorumNumbers,
         string calldata socket,
         IBLSApkRegistry.PubkeyRegistrationParams calldata params,
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
 
     /**
@@ -39,8 +39,8 @@ interface IRegistryCoordinatorExtended is IRegistryCoordinator {
         string calldata socket,
         IBLSApkRegistry.PubkeyRegistrationParams calldata params,
         IRegistryCoordinator.OperatorKickParam[] calldata operatorKickParams,
-        ISignatureUtils.SignatureWithSaltAndExpiry memory churnApproverSignature,
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory churnApproverSignature,
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
 
     /**

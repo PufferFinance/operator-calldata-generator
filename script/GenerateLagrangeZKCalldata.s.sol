@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { console } from "forge-std/Script.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Interface for easier calldata generation
@@ -18,7 +18,7 @@ interface ILagrangeZKService {
 
     function registerOperator(
         PublicKey calldata publicKey,
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
 }
 
@@ -37,7 +37,7 @@ contract GenerateLagrangeZKCalldata is BaseScript {
         address avs = vm.envAddress("AVS_SERVICE_MANAGER");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
-        (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
+        (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
             _ECDSA_SK,
             restakingOperatorContract,

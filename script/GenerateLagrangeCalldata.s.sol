@@ -5,7 +5,7 @@ import { console } from "forge-std/Script.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
 import { IBLSApkRegistry } from "eigenlayer-middleware/src/interfaces/IRegistryCoordinator.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
 // Interface for easier calldata generation
@@ -14,7 +14,7 @@ interface ILagrangeService {
     function register(
         address signAddress,
         uint256[2][] memory blsPubKeys,
-        ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature
     ) external;
 
     function subscribe(uint32 chainId) external;
@@ -37,7 +37,7 @@ contract GenerateLagrangeCalldata is BaseScript {
         address operatorAddress = vm.addr(vm.envUint("OPERATOR_ECDSA_SK"));
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
-        (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
+        (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
             vm.envUint("OPERATOR_ECDSA_SK"),
             restakingOperatorContract,

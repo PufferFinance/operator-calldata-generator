@@ -4,15 +4,30 @@ pragma solidity ^0.8.13;
 import { Script, console } from "forge-std/Script.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
 import { IBLSApkRegistry } from "eigenlayer-middleware/src/interfaces/IRegistryCoordinator.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { IRegistryCoordinatorExtended } from "../interface/IRegistryCoordinatorExtended.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 
 /**
- * forge script script/GenerateNodeOperatorSignatures.s.sol:GenerateNodeOperatorSignatures --rpc-url=$RPC_URL --ffi
+ * @notice DEPRECATED — DO NOT USE.
+ *
+ * Emits calldata for `PufferModuleManager.callRegisterOperatorToAVS(address,address,bytes,string,
+ * PubkeyRegistrationParams,SignatureWithSaltAndExpiry)` with selector `0xaba326d8`. That function
+ * was REMOVED from PufferModuleManager when it was upgraded for the EigenLayer slashing release
+ * (the surviving `callRegisterOperatorToAVS` takes `(address,IAllocationManager.RegisterParams)`
+ * with selector `0xa06dee43`).
+ *
+ * The output of this script will revert on the current mainnet PMM with:
+ *   "unrecognized function selector 0xaba326d8 for contract <impl>, which has no fallback function."
+ *
+ * Replacement: `GenerateEigenDACalldata.s.sol` for legacy-flow AVSs (EigenDA today).
+ *
+ * Kept only as a historical reference. Remove once the legacy flow is fully retired.
+ *
+ * forge script script/GenerateNodeOperatorSignaturesDeprecated.s.sol:GenerateNodeOperatorSignaturesDeprecated --rpc-url=$RPC_URL --ffi
  */
-contract GenerateNodeOperatorSignatures is BaseScript {
+contract GenerateNodeOperatorSignaturesDeprecated is BaseScript {
     using BN254 for BN254.G1Point;
     using Strings for uint256;
 
@@ -21,7 +36,7 @@ contract GenerateNodeOperatorSignatures is BaseScript {
         address registryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
-        (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
+        (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
             _ECDSA_SK,
             restakingOperatorContract,

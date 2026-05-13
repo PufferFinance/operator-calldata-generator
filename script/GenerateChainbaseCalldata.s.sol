@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import { console } from "forge-std/Script.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 
 interface IChainbaseRegistryCoordinator {
@@ -10,7 +10,7 @@ interface IChainbaseRegistryCoordinator {
      * @notice Register an operator with the AVS. Forwards call to EigenLayer' AVSDirectory.
      * @param operatorSignature The signature, salt, and expiry of the operator's signature.
      */
-    function registerOperator(ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) external;
+    function registerOperator(ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) external;
 }
 
 /**
@@ -22,7 +22,7 @@ contract GenerateChainbaseCalldata is BaseScript {
         address avsRegistryCoordinator = vm.envAddress("AVS_REGISTRY_COORDINATOR");
         address avsServiceManager = vm.envAddress("AVS_SERVICE_MANAGER");
 
-        (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
+        (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
             _ECDSA_SK,
             restakingOperatorContract,

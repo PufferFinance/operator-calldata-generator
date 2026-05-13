@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import { Script, console } from "forge-std/Script.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 import { BaseScript } from "script/BaseScript.s.sol";
 
@@ -12,7 +12,7 @@ interface IHyperLaneRegistryCoordinator {
     /// @param _operatorSignature Contains the operator's signature, salt, and expiry
     /// @param _signingKey The signing key to add to the operator's history
     function registerOperatorWithSignature(
-        ISignatureUtils.SignatureWithSaltAndExpiry memory _operatorSignature,
+        ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory _operatorSignature,
         address _signingKey
     ) external;
 }
@@ -30,7 +30,7 @@ contract GenerateHyperlaneCalldata is BaseScript {
         address signingKeyAddress = vm.envAddress("ECDSA_SIGNING_KEY_ADDDRESS");
 
         // With ECDSA key, he sign the hash confirming that the operator wants to be registered to a certain restaking service
-        (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) =
+        (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) =
         _getOperatorSignature(
             _ECDSA_SK,
             restakingOperatorContract,

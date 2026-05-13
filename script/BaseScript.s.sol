@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import { Script } from "forge-std/Script.sol";
 import { BN254 } from "eigenlayer-middleware/src/libraries/BN254.sol";
 import { IBLSApkRegistry } from "eigenlayer-middleware/src/interfaces/IRegistryCoordinator.sol";
-import { ISignatureUtils } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtils.sol";
+import { ISignatureUtilsMixinTypes } from "eigenlayer-contracts/src/contracts/interfaces/ISignatureUtilsMixin.sol";
 import { IAVSDirectory } from "eigenlayer-contracts/src/contracts/interfaces/IAVSDirectory.sol";
 import { Strings } from "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -29,9 +29,9 @@ contract BaseScript is Script {
 
     function _mulGo(uint256 x) internal returns (BN254.G2Point memory g2Point) {
         string[] memory inputs = new string[](3);
-        // inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        inputs[0] = "./go2mul-mac"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         // inputs[0] = "./go2mul-arm64"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
-        inputs[0] = "./go2mul"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
+        // inputs[0] = "./go2mul"; // lib/eigenlayer-middleware/test/ffi/go/g2mul.go binary
         inputs[1] = x.toString();
 
         inputs[2] = "1";
@@ -57,7 +57,7 @@ contract BaseScript is Script {
         address avs,
         bytes32 salt,
         uint256 expiry
-    ) internal view returns (bytes32 digestHash, ISignatureUtils.SignatureWithSaltAndExpiry memory operatorSignature) {
+    ) internal view returns (bytes32 digestHash, ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory operatorSignature) {
         operatorSignature.expiry = expiry;
         operatorSignature.salt = salt;
         {
