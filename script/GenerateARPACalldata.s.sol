@@ -14,6 +14,9 @@ interface INodeRegistry {
         address assetAccountAddress,
         ISignatureUtilsMixinTypes.SignatureWithSaltAndExpiry memory assetAccountSignature
     ) external;
+
+    function nodeActivate(ISignatureUtils.SignatureWithSaltAndExpiry memory assetAccountSignature)
+        external;
 }
 
 /**
@@ -44,13 +47,12 @@ contract GenerateARPACalldata is BaseScript {
         );
 
         // Params for nodeRegister
-        bytes memory dkgPublicKey = vm.envBytes("DKG_PUBLIC_KEY"); //assuming Operator has dkg public key : https://docs.arpanetwork.io/#core-architecture-and-standards
+        // bytes memory dkgPublicKey = vm.envBytes("DKG_PUBLIC_KEY"); //assuming Operator has dkg public key : https://docs.arpanetwork.io/#core-architecture-and-standards
 
         // custom registration calldata
         bytes memory registrationCallData = abi.encodeCall(
-            INodeRegistry.nodeRegister, (dkgPublicKey, true, restakingOperatorContract, operatorSignature)
+            INodeRegistry.nodeActivate, (operatorSignature)
         );
-
 
         console.log("Store digest hash to PufferModuleManager calldata:");
         console.logBytes(hashCall);
